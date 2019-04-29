@@ -1,12 +1,17 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { NativeRouter, Route } from 'react-router-native';
+
+import Splash from './components/Splash';
 
 export default class App extends React.Component {
   render() {
     return (
-      <View style={styles.container}>
-        <Text>Open up App.js to start working on your app!</Text>
-      </View>
+      <NativeRouter>
+        <View style={styles.container}>
+          <Route exact path="/" component={Splash} />
+        </View>
+      </NativeRouter>
     );
   }
 }
