@@ -13,6 +13,12 @@ $response_logout = array(
   'status'	=> false
 );
 
+$response_register = array(
+  'status'	=> false,
+  'username_exists' => false,
+  'email_exists' => false,
+);
+
 /* Sanitize all received posts */
 foreach($_POST as $k => $value) {
   $_POST[$k] = sanitize_text_field($value);
@@ -30,7 +36,7 @@ function generate_auth_token($n) {
 } 
 
 /**
- * Logoin Method
+ * Login Method
  * 
 **/
 $tokens = array();
@@ -85,5 +91,34 @@ if(isset( $_POST['type'] ) &&  $_POST['type'] == 'logout') {
       echo json_encode($response_logout);
     }
   }
+}
+
+
+/**
+ * Register Method
+ *
+ **/
+if(isset( $_POST['type'] ) &&  $_POST['type'] == 'register') {
+  
+  $username_exists = username_exists( $_POST['username'] );
+  $email_exists = email_exists($_POST['email']);
+  
+  if($username_exists) {
+    $response_register['username_exists'] = true;
+  }
+  
+  if($email_exists) {
+    $response_register['email_exists'] = true;
+  }
+  
+  if(!$username_exists && !$email_exists) {
+    $response_register['status'] = true;
+    $response_register['username_exists'] = false;
+    $response_register['email_exists'] = false;
+    
+    wp_create_user($_POST['username'], $_POST['password'], $_POST['email']);
+    $response_register['status'] = true;
+  }
+  echo json_encode($response_register);
 }
 ?>

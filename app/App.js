@@ -5,6 +5,7 @@ import { Font } from 'expo';
 
 import Splash from './components/Splash';
 import Login from './components/Login';
+import Register from './components/Register';
 import Home from './components/Home';
 
 export default class App extends React.Component {
@@ -30,6 +31,7 @@ export default class App extends React.Component {
             <NativeRouter>
               <Route exact path="/" component={Splash} />
               <Route exact path="/login" component={Login} />
+              <Route exact path="/register" component={Register} />
               <Route exact path="/home" component={Home} />
             </NativeRouter>
           ) : null
