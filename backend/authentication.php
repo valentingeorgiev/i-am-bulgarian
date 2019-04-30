@@ -9,6 +9,10 @@ $response_login = array(
   'wrong_password' => false,
 );
 
+$response_logout = array(
+  'status'	=> false
+);
+
 /* Sanitize all received posts */
 foreach($_POST as $k => $value) {
   $_POST[$k] = sanitize_text_field($value);
@@ -59,5 +63,27 @@ if(isset( $_POST['type'] ) &&  $_POST['type'] == 'login') {
     $response_login['wrong_username'] = true;
   }
   echo json_encode($response_login);
+}
+
+
+/**
+ * Logout Method
+ *
+**/
+if(isset( $_POST['type'] ) &&  $_POST['type'] == 'logout') {
+  
+  if (metadata_exists('user', $_POST['user_id'], 'auth_token')) {
+    $tokens = get_user_meta($_POST['user_id'], 'auth_token', false);
+    $tokens = $tokens[0];
+    
+    if (($key = array_search($_POST['auth_token'], $tokens)) !== false) {
+      unset($tokens[$key]);
+    }
+    
+    if( update_user_meta($_POST['user_id'], 'auth_token', $tokens) ){
+      $response_logout['status'] = true;
+      echo json_encode($response_logout);
+    }
+  }
 }
 ?>
