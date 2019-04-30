@@ -29,7 +29,7 @@ export default class Login extends Component {
         />
         <Text style={[styles.loginTitle, general.h1, general.bold]}>{'Опознай България'.toUpperCase()}</Text>
         
-        <View style={forms.inputContainer}>
+        <View style={{...forms.inputContainer, borderColor: this.state.errorColorUsername}}>
           <Image style={forms.inputIcon} source={require('../assets/img/icons/user-solid.png')}/>
           <TextInput style={forms.inputs}
             placeholder={this.state.usernameError}
@@ -38,7 +38,7 @@ export default class Login extends Component {
           />
         </View>
         
-        <View style={forms.inputContainer}>
+        <View style={{...forms.inputContainer, borderColor: this.state.errorColorPassword}}>
           <Image style={forms.inputIcon} source={require('../assets/img/icons/key-solid.png')}/>
           <TextInput style={forms.inputs}
             placeholder={this.state.passwordError}
@@ -64,15 +64,15 @@ export default class Login extends Component {
   validate() {
     if(this.state.username && this.state.password) {
       this.login();
-      this.setState({
-        usernameError: 'Потребителско име',
-        passwordError: 'Парола'
-      });
     } else {
       if(!this.state.username) {
         this.setState({
           usernameError: 'Въведете потребителско име',
           errorColorUsername: 'red',
+        });
+      } else {
+        this.setState({
+          errorColorUsername: 'black',
         });
       }
       
@@ -80,6 +80,10 @@ export default class Login extends Component {
         this.setState({
           passwordError: 'Въведете парола',
           errorColorPassword: 'red',
+        });
+      } else {
+        this.setState({
+          errorColorPassword: 'black',
         });
       }
     }
@@ -103,12 +107,20 @@ export default class Login extends Component {
           usernameError: "Грешно потребителско име",
           errorColorUsername: 'red',
         });
+      } else {
+        this.setState({
+          errorColorUsername: 'black',
+        });
       }
       
       if(responseJson.wrong_password) {
         this.setState({
           passwordError: "Грешна парола",
           errorColorPassword: 'red',
+        });
+      } else {
+        this.setState({
+          errorColorPassword: 'black',
         });
       }
       
