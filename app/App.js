@@ -6,6 +6,9 @@ import { Font } from 'expo';
 import Splash from './components/Splash';
 import Login from './components/Login';
 import Register from './components/Register';
+import Rankings from './components/Rankings';
+import ARTag from './components/ARTag';
+import UserProfile from './components/UserProfile';
 import Home from './components/Home';
 
 export default class App extends React.Component {
@@ -29,10 +32,13 @@ export default class App extends React.Component {
         {
           this.state.fontLoaded ? (
             <NativeRouter>
-              <Route exact path="/" component={Splash} />
+              <Route exact path="/home" component={Splash} />
               <Route exact path="/login" component={Login} />
               <Route exact path="/register" component={Register} />
-              <Route exact path="/home" component={Home} />
+              <Route exact path="/rankings" component={Rankings} />
+              <Route exact path="/ar-tag" component={ARTag} />
+              <Route exact path="/user-profile" component={UserProfile} />
+              <Route exact path="/" component={Home} />
             </NativeRouter>
           ) : null
         }

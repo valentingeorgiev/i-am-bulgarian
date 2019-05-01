@@ -22,7 +22,7 @@ export default class Login extends Component {
   
   render() {
     return (
-      <KeyboardAvoidingView style={general.container} behavior="padding" enabled>
+      <KeyboardAvoidingView style={[general.container, general.flexCenter]} behavior="padding" enabled>
         <Image
           style={styles.logoImage}
           source={require('../assets/img/logo.png')}

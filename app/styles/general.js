@@ -4,9 +4,6 @@ export default StyleSheet.create({
   container: {
     display: 'flex',
     flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
     width: '100%',
     height: '100%',
     paddingLeft: 30,
@@ -17,11 +14,13 @@ export default StyleSheet.create({
   containerFull: {
     display: 'flex',
     flex: 1,
+    width: '100%',
+    height: '100%'
+  },
+  flexCenter: {
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    width: '100%',
-    height: '100%'
   },
   normal: {
     fontFamily: 'roboto-regular'

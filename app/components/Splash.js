@@ -21,7 +21,7 @@ export default class Splash extends React.Component {
 
   render() {
     return (
-      <View style={general.container}>
+      <View style={[general.container, general.flexCenter]}>
         <Image
           style={styles.splashImage}
           source={require('../assets/img/logo.png')}

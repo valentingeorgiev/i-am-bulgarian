@@ -24,7 +24,7 @@ export default class Register extends Component {
   
   render() {
     return (
-      <KeyboardAvoidingView style={general.container} behavior="padding" enabled>
+      <KeyboardAvoidingView style={[general.container, general.flexCenter]} behavior="padding" enabled>
 
         <Text style={[styles.registerTitle, general.h1, general.bold]}>{'Регистрирай се'.toUpperCase()}</Text>
         
