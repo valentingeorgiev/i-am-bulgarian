@@ -1,9 +1,9 @@
 {
   "devToolsPort": 19002,
-  "expoServerPort": 19000,
-  "packagerPort": 19001,
-  "packagerPid": 66632,
+  "expoServerPort": null,
+  "packagerPort": null,
+  "packagerPid": null,
   "expoServerNgrokUrl": "https://4w-6p7.vgeorgiev.app.exp.direct",
   "packagerNgrokUrl": "https://packager.4w-6p7.vgeorgiev.app.exp.direct",
-  "ngrokPid": 66652
+  "ngrokPid": 68520
 }

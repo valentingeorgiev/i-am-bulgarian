@@ -32,13 +32,13 @@ export default class App extends React.Component {
         {
           this.state.fontLoaded ? (
             <NativeRouter>
-              <Route exact path="/home" component={Splash} />
+              <Route exact path="/" component={Splash} />
               <Route exact path="/login" component={Login} />
               <Route exact path="/register" component={Register} />
               <Route exact path="/rankings" component={Rankings} />
               <Route exact path="/ar-tag" component={ARTag} />
               <Route exact path="/user-profile" component={UserProfile} />
-              <Route exact path="/" component={Home} />
+              <Route exact path="/home" component={Home} />
             </NativeRouter>
           ) : null
         }
