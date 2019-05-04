@@ -7,7 +7,7 @@ import Splash from './components/Splash';
 import Login from './components/Login';
 import Register from './components/Register';
 import Rankings from './components/Rankings';
-import ARTag from './components/ARTag';
+import ARCamera from './components/ARCamera';
 import UserProfile from './components/UserProfile';
 import Home from './components/Home';
 
@@ -36,7 +36,7 @@ export default class App extends React.Component {
               <Route exact path="/login" component={Login} />
               <Route exact path="/register" component={Register} />
               <Route exact path="/rankings" component={Rankings} />
-              <Route exact path="/ar-tag" component={ARTag} />
+              <Route exact path="/ar-tag" component={ARCamera} />
               <Route exact path="/user-profile" component={UserProfile} />
               <Route exact path="/home" component={Home} />
             </NativeRouter>
