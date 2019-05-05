@@ -36,7 +36,7 @@ export default class App extends React.Component {
               <Route exact path="/login" component={Login} />
               <Route exact path="/register" component={Register} />
               <Route exact path="/rankings" component={Rankings} />
-              <Route exact path="/ar-tag" component={ARCamera} />
+              <Route exact path="/ar-camera" component={ARCamera} />
               <Route exact path="/user-profile" component={UserProfile} />
               <Route exact path="/home" component={Home} />
             </NativeRouter>

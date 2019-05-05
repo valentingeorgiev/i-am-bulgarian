@@ -8,21 +8,33 @@ export default class Navigation extends React.Component {
   render () {
     return (
       <View style={nav.navContainer}>
-        <Link to='/home' style={nav.navItem }>
-          <Image style={nav.navIcon} source={require('../assets/img/icons/home-solid.png')}/>
-        </Link>
+
+        <View style={nav.navLeft}>
+          <Link to='/home' style={nav.navItem }>
+            <Image style={nav.navIcon} source={require('../assets/img/icons/home-solid.png')}/>
+          </Link>
+          <Link to='/home' style={nav.navItem }>
+            <Image style={nav.navIcon} source={require('../assets/img/icons/map-marked-alt-solid.png')}/>
+          </Link>
+        </View>
         
-        <Link to='/ar-tag' style={nav.navItem}>
-          <Image style={nav.navIcon} source={require('../assets/img/icons/ar-tag.png')}/>
-        </Link>
+        <View style={nav.navCenter}>
+          <View style={nav.navCenterBorder}>
+            <Link to='/ar-camera' style={nav.arItem}>
+              <Image style={nav.arNavIcon} source={require('../assets/img/icons/ar-tag.png')}/>
+            </Link>
+          </View>
+        </View>
         
-        <Link to='/rankings' style={nav.navItem}>
-          <Image style={nav.navIcon} source={require('../assets/img/icons/medal-solid.png')}/>
-        </Link>
+        <View style={nav.navRight}>
+          <Link to='/rankings' style={nav.navItem}>
+            <Image style={nav.navIcon} source={require('../assets/img/icons/medal-solid.png')}/>
+          </Link>
+          <Link to='/user-profile' style={nav.navItem}>
+            <Image style={nav.navIcon} source={require('../assets/img/icons/user-solid.png')}/>
+          </Link>
+        </View>
         
-        <Link to='/user-profile' style={nav.navItem}>
-          <Image style={nav.navIcon} source={require('../assets/img/icons/user-solid.png')}/>
-        </Link>
       </View>
     );
   }
