@@ -19,11 +19,13 @@ export default class Navigation extends React.Component {
         </View>
         
         <View style={nav.navCenter}>
+          <View style={nav.navLeftBorder}></View>
           <View style={nav.navCenterBorder}>
             <Link to='/ar-camera' style={nav.arItem}>
               <Image style={nav.arNavIcon} source={require('../assets/img/icons/ar-tag.png')}/>
             </Link>
           </View>
+          <View style={nav.navRightBorder}></View>
         </View>
         
         <View style={nav.navRight}>

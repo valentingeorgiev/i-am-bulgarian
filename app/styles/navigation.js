@@ -70,4 +70,22 @@ export default StyleSheet.create({
     height: 40,
     resizeMode: 'contain'
   },
+  navLeftBorder: {
+    flex: 1,
+    width: 80,
+    position: 'absolute',
+    right: 99,
+    bottom: 50,
+    borderTopWidth: 1,
+    borderColor: '#cacaca',
+  },
+  navRightBorder: {
+    flex: 1,
+    width: 80,
+    position: 'absolute',
+    left: 99,
+    bottom: 50,
+    borderTopWidth: 1,
+    borderColor: '#cacaca',
+  }
 })
