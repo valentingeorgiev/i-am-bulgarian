@@ -22,6 +22,7 @@ export default class App extends React.Component {
       'roboto-bold-italic': require('./assets/fonts/Roboto-BoldItalic.ttf'),
       'roboto-italic': require('./assets/fonts/Roboto-Italic.ttf'),
       'roboto-regular': require('./assets/fonts/Roboto-Regular.ttf'),
+      'roboto-medium': require('./assets/fonts/Roboto-Medium.ttf'),
     });
     this.setState({ fontLoaded: true });
   }
