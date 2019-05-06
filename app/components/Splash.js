@@ -24,7 +24,7 @@ export default class Splash extends React.Component {
       <View style={[general.container, general.flexCenter]}>
         <Image
           style={styles.splashImage}
-          source={require('../assets/img/logo.png')}
+          source={require('../assets/img/logo-splash-screen.png')}
         />
       </View>
     );
@@ -40,8 +40,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   splashImage: {
-    width: '80%',
-    height: '40%',
+    width: '100%',
+    height: '100%',
     resizeMode: 'contain'
   }
 });
