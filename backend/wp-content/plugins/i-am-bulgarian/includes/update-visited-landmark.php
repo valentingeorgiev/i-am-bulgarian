@@ -3,6 +3,11 @@
 $path = preg_replace('/wp-content(?!.*wp-content).*/','',__DIR__);
 require_once($path.'wp-load.php');
 
+/* Sanitize all received posts */
+foreach($_POST as $k => $value) {
+  $_POST[$k] = sanitize_text_field($value);
+}
+
 $response = array(
   'status'	=> false
 );
