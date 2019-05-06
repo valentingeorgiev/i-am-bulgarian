@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, TouchableOpacity, Dimensions } from 'react-native';
+import { Text, View, TouchableOpacity, Dimensions, AsyncStorage } from 'react-native';
 import { Permissions, Camera, Location, Accelerometer, Magnetometer } from 'expo';
 
 import { ARLocation } from '../model/ARLocation';
@@ -10,10 +10,8 @@ const z_near = 0.5;
 const z_far = 2000;
 const distanceThreshold = 100;
 
-//TODO testing
-const testPoints = [{name: "Съдебна палата", location: new ARLocation(42.95908283333333, 23.35125, 500), visited: false},
-{name: "Мебели", location: new ARLocation(42.958070, 23.351828, 520), visited: true},
-{name: "Хотел", location: new ARLocation(42.958450, 23.351249, 520), visited: false}];
+//TODO for testing remove
+// const testPoints = [{name: "Съдебна палата", location: new ARLocation(42.95908283333333, 23.35125, 500), visited: false}];
 
 /**
  * A component which shows where real-world locations are by
@@ -34,7 +32,7 @@ export default class ARCamera extends React.Component {
         //TODO Use gyroscope data to enable higher accuracy on high-end devices
         location: new ARLocation(0.0, 0.0, 0.0),
         //initial empty points
-        arPoints: [{name: "", location: new ARLocation(0.0, 0.0, 9000), visited: true}],
+        arPoints: [{id: -1, name: "", location: new ARLocation(0.0, 0.0, 9000), visited: true, points: 0}],
         //initial empty coordinates
         arCoords: [{name: "", x: 0, y: 0}],
       };
@@ -54,13 +52,15 @@ export default class ARCamera extends React.Component {
         let pos = await Location.getCurrentPositionAsync({accuracy : Location.Accuracy.BestForNavigation});
         let location = new ARLocation(pos.coords.latitude, pos.coords.longitude, pos.coords.altitude);
 
-        //TODO fetch testPoints points from WP
-        let arPoints = this.getPointsInRadius(location, testPoints, z_far);
+        //TODO for testing remove
+        // let arPoints = this.getPointsInRadius(location, testPoints, z_far);
 
-        this.setState({
-          location: location,
-          arPoints: arPoints
-        });
+        // this.setState({
+        //   location: location,
+        //   arPoints: arPoints
+        // });
+        
+        this.setState({location: location}, () => this.updateARPoints());
       }
 
       //subscribe to accelerometer service
@@ -80,7 +80,6 @@ export default class ARCamera extends React.Component {
       Accelerometer.removeAllListeners();
       Magnetometer.removeAllListeners();
       this.locationSubscription.remove();
-      this.arPointsUpdate.remove();
 
       //TODO Check if camera unmounts properly
     }
@@ -159,15 +158,107 @@ export default class ARCamera extends React.Component {
     /**
      * Called when the user touches an AR overlay element.
      */
-    onCoordPressed(coord) {
-      //testing
+    async onCoordPressed(coord) {
+      //TODO for testing remove
+      // const { arPoints } = this.state;
+      // arPoints.forEach(arPoint => {
+      //   if(coord.name === arPoint.name && coord.distance <= distanceThreshold){
+      //     arPoint.visited = true;
+      //   }
+      // });
+
       const { arPoints } = this.state;
-      arPoints.forEach(arPoint => {
-        if(coord.name === arPoint.name && coord.distance <= distanceThreshold){
-          arPoint.visited = true;
-          //TODO set in database, give User points
+      arPoints.forEach(async (arPoint) => {
+        if(arPoint.id === coord.id && coord.distance <= distanceThreshold){
+          if(arPoint.visited === false){
+            arPoint.visited = true;
+
+            //get user ID
+            let userID = '';
+            const user = await AsyncStorage.getItem('user');
+            if(user) {
+              userID = JSON.parse(user).id;
+            }
+            
+            //update visited landmarks and points
+            let formData = new FormData();
+            formData.append('user_id', userID);
+            formData.append('landmark_id', arPoint.id);
+            formData.append('landmark_points', arPoint.points);
+            try {
+              const response = await fetch('https://i-am-bulgarian.000webhostapp.com/wp-content/plugins/i-am-bulgarian/includes/update-visited-landmark.php', {
+                method: 'POST',
+                body: formData
+              });
+            
+              const responseJson = await response.json();
+              if(responseJson.status) {
+                console.log(responseJson.status);
+                //TODO Notify user that he has received points
+              }
+            }
+            catch (error) {
+              console.error(error);
+            }
+          }
         }
       });
+    }
+
+    /**
+     * Updates the points of interest in the component state.
+     */
+    async updateARPoints(){
+      //get user ID
+      let userID = '';
+      const user = await AsyncStorage.getItem('user');
+      if(user) {
+        userID = JSON.parse(user).id;
+      }  
+ 
+      //get visited landmark IDs
+      let visitedIDs = new Array();
+
+      let formData = new FormData();
+      formData.append('user_id', userID);
+      try {
+        const response = await fetch('https://i-am-bulgarian.000webhostapp.com/wp-content/plugins/i-am-bulgarian/includes/visited-landmark.php', {
+          method: 'POST',
+          body: formData
+        });
+
+        const responseJson = await response.json();
+        if(responseJson.status) {
+          visitedIDs = responseJson.visited_landmarks;
+        }
+      }
+      catch (error) {
+        console.error(error);
+      }
+
+      //get landmarks
+      let landmarks = new Array();
+
+      try {
+        const landmarkResponse = await fetch('https://i-am-bulgarian.000webhostapp.com/wp-json/wp/v2/landmark');
+        const landmarkJson = await landmarkResponse.json();
+        landmarkJson.map(landmark => {
+          landmarks.push({
+            id: landmark.id,
+            name: landmark.title.rendered,
+            location: new ARLocation(Number(landmark.acf.landmark_latitude), 
+                                     Number(landmark.acf.landmark_longitude),
+                                     Number(landmark.acf.landmark_altitude)),
+            visited: visitedIDs.includes(landmark.id.toString()),
+            points: Number(landmark.acf.landmark_points)});
+        });
+
+        let arPoints = this.getPointsInRadius(this.state.location, landmarks, z_far);
+        this.setState({arPoints: arPoints});
+      }
+      catch (error) {
+        console.log(error);
+      }
     }
 
     /**
@@ -281,7 +372,15 @@ export default class ARCamera extends React.Component {
               break;
           }
 
-          coords.push({name: arPoint.name, x: x, y: y, distance: distance, backgroundColor: backgroundColor, borderColor: borderColor});
+          coords.push({
+            id: arPoint.id,
+            name: arPoint.name,
+            points: arPoint.points,
+            x: x,
+            y: y,
+            distance: distance,
+            backgroundColor: backgroundColor,
+            borderColor: borderColor});
           this.setState({arCoords: coords});    
         }
       });   
