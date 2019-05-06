@@ -65,5 +65,9 @@ export default StyleSheet.create({
     alignSelf: 'center',
     alignContent: 'center',
     justifyContent: 'center',
+  },
+  listRowMostVisits: {
+    fontFamily: 'roboto-regular',
+    fontSize: 20,
   }
 })

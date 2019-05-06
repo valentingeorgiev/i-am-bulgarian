@@ -13,7 +13,7 @@ export default class Navigation extends React.Component {
           <Link to='/home' style={nav.navItem }>
             <Image style={nav.navIcon} source={require('../assets/img/icons/home-solid.png')}/>
           </Link>
-          <Link to='/home' style={nav.navItem }>
+          <Link to='/most-visited-landmarks' style={nav.navItem }>
             <Image style={nav.navIcon} source={require('../assets/img/icons/map-marked-alt-solid.png')}/>
           </Link>
         </View>

@@ -10,16 +10,16 @@ export default class Rankings extends React.Component {
     super(props);
     
     this.state = {
-      rankingsRow: []
+      mostVisitedRows: []
     }
   }
   async componentDidMount() {
     try {
-      const response = await fetch('https://i-am-bulgarian.000webhostapp.com/wp-content/plugins/i-am-bulgarian/includes/rankings.php');
+      const response = await fetch('https://i-am-bulgarian.000webhostapp.com/wp-content/plugins/i-am-bulgarian/includes/most-visited-landmarks.php');
       
       const responseJson = await response.json();
       this.setState({ 
-        rankingsRow: responseJson, 
+        mostVisitedRows: responseJson, 
       });
     }
     catch (error) {
@@ -31,22 +31,19 @@ export default class Rankings extends React.Component {
     return (
       <View style={general.containerFull}>
         <View style={general.container}>
-          <Text style={general.screenTitle}>Ранглиста</Text>
+          <Text style={general.screenTitle}>Най-посещавани обекти</Text>
           <ScrollView style={{marginTop: 16, marginBottom: 60}}>
-            {this.state.rankingsRow.map((row, index) => {
+            {this.state.mostVisitedRows.map((row, index) => {
               return (
                 <View key={index} style={list.listRow}>
-                  <View style={{width:'50%', flexDirection:'row', flex:1}}>
+                  <View style={{width:'70%', flexDirection:'row', flex:1}}>
                     <Text style={list.position}>{index+1}.</Text>
-                    <Text style={list.listRowName}>{row.user}</Text>
+                    <Text style={list.listRowName}>{row.landmark_name}</Text>
                   </View>
                   
-                  <View style={{...list.visitsPoints, width:'50%'}}>
+                  <View style={{...list.visitsPoints, width:'30%'}}>
                     <Image style={list.visitsIcon} source={require('../assets/img/icons/eye-solid.png')}/>
-                    <Text style={list.listRowCountVisits}>{row.count_visits}</Text>
-                    
-                    <Image style={list.pointsIcon} source={require('../assets/img/icons/medal-solid.png')}/>
-                    <Text style={list.listRowPoints}>{row.points}</Text>
+                    <Text style={list.listRowMostVisits}>{row.count_visits}</Text>
                   </View>
                 </View>
               )

@@ -9,6 +9,7 @@ import Register from './components/Register';
 import Rankings from './components/Rankings';
 import ARCamera from './components/ARCamera';
 import UserProfile from './components/UserProfile';
+import MostVisitedLandmarks from './components/MostVisitedLandmarks';
 import Home from './components/Home';
 
 export default class App extends React.Component {
@@ -39,6 +40,7 @@ export default class App extends React.Component {
               <Route exact path="/rankings" component={Rankings} />
               <Route exact path="/ar-camera" component={ARCamera} />
               <Route exact path="/user-profile" component={UserProfile} />
+              <Route exact path="/most-visited-landmarks" component={MostVisitedLandmarks} />
               <Route exact path="/home" component={Home} />
             </NativeRouter>
           ) : null
