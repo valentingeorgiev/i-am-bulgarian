@@ -18,12 +18,11 @@ export default class UserProfile extends React.Component {
       userName: '',
       countVisitedLandmarks: 0,
       userPoints: 0,
-      idsVisitedLandmarks: '',
       visitedLandmarks: []
     }
   }
   
-  async componentWillMount() {
+  async componentDidMount() {
     let userID = 0;
     const user = await AsyncStorage.getItem('user');
     if(user) {
@@ -36,30 +35,25 @@ export default class UserProfile extends React.Component {
     fetchIDsVisitedLandmarks(userID).then((idsVisitedLandmarks) => {
       this.setState({
         countVisitedLandmarks: idsVisitedLandmarks.length,
-        idsVisitedLandmarks: idsVisitedLandmarks.join()
       });
-    });
-    
+
+      fetch('https://i-am-bulgarian.000webhostapp.com/wp-json/wp/v2/landmark?include=' + idsVisitedLandmarks.join())
+      .then((response) => response.json())
+      .then((responseJson) => {
+        this.setState({ 
+          visitedLandmarks: responseJson, 
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    })
+
     fetchUserPoints(userID).then((userPoints) => {
       this.setState({
         userPoints: userPoints
       });
     });
-    
-    this.fetchVisitedLandmarks();
-  }
-  
-  async fetchVisitedLandmarks() {
-    try {
-      const response = await fetch('https://i-am-bulgarian.000webhostapp.com/wp-json/wp/v2/landmark?include=' + this.state.idsVisitedLandmarks);
-      const responseJson = await response.json();
-      this.setState({ 
-        visitedLandmarks: responseJson, 
-      });
-    }
-    catch (error) {
-      console.error(error);
-    }
   }
 
   render() {
