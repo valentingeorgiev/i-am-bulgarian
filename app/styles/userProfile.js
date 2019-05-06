@@ -55,31 +55,5 @@ export default StyleSheet.create({
     marginBottom: 16,
     fontFamily: 'roboto-medium',
     fontSize: 24,
-  },
-  visitedLandmarks: {
-    flexDirection: 'row',
-    marginBottom: 10,
-    paddingTop: 10,
-    paddingBottom: 10,
-    paddingLeft: 10,
-    paddingRight: 10,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderLeftWidth: 5,
-    borderRightWidth: 1,
-    borderTopColor: '#cacaca',
-    borderBottomColor: '#cacaca',
-    borderLeftColor: '#009b75',
-    borderRightColor: '#cacaca',
-  },
-  visitedLandmarksIcon: {
-    width: 20,
-    height: 20,
-    resizeMode: 'contain',
-    marginRight: 10,
-  },
-  visitedLandmarksName: {
-    fontFamily: 'roboto-regular',
-    fontSize: 20,
   }
 })

@@ -63,4 +63,9 @@ export default StyleSheet.create({
   buttonText: {
     color: 'white',
   },
+  screenTitle: {
+    fontFamily: 'roboto-bold',
+    fontSize: 36,
+    marginTop: 30,
+  }
 })

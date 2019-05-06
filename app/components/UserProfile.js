@@ -9,6 +9,7 @@ import { fetchUserPoints } from '../utils/GetUserPoints';
 
 import general from '../styles/general';
 import user from '../styles/userProfile';
+import list from '../styles/list';
 
 export default class UserProfile extends React.Component {
   constructor(props) {
@@ -86,9 +87,9 @@ export default class UserProfile extends React.Component {
           <ScrollView style={{marginBottom: 60}}>
             {this.state.visitedLandmarks.map((landmark, index) => {
               return (
-                <View  key={index} style={user.visitedLandmarks}>
-                  <Image style={user.visitedLandmarksIcon} source={require('../assets/img/icons/map-marked-alt-solid.png')}/>
-                  <Text style={user.visitedLandmarksName}>{landmark.title.rendered}</Text>
+                <View  key={index} style={list.listRow}>
+                  <Image style={list.listRowIcon} source={require('../assets/img/icons/map-marked-alt-solid.png')}/>
+                  <Text style={list.listRowName}>{landmark.title.rendered}</Text>
                 </View>
               )
             })}
