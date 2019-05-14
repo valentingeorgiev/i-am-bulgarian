@@ -6,6 +6,8 @@ import { ARLocation } from '../model/ARLocation';
 import { Matrix } from '../utils/Matrix';
 import { SensorUtilities } from '../utils/SensorUtilities';
 
+import Navigation from './Navigation';
+
 const z_near = 0.5;
 const z_far = 2000;
 const distanceThreshold = 100;
@@ -70,7 +72,7 @@ export default class ARCamera extends React.Component {
       Magnetometer.setUpdateInterval(100);
 
       //subscribe to location updates
-      this.locationSubscription = Location.watchPositionAsync(
+      this.locationSubscription = await Location.watchPositionAsync(
         {accuracy: Location.Accuracy.BestForNavigation, timeInterval: 1000, distanceInterval: 5}, 
         result => this.onLocationUpdate(result));    
       }
@@ -150,6 +152,8 @@ export default class ARCamera extends React.Component {
             >
             {/* !!! REACT-NATIVE ANDROID ISSUE CAMERA COMPONENT MUST NOT HAVE CHILDREN !!! */}
             </Camera>}
+
+            <Navigation/>
           </View>
         );
       }
