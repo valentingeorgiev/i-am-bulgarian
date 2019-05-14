@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import { MapView, Location } from "expo";
+import { MapView, Permissions, Location } from "expo";
 
 import general from '../styles/general';
 import Navigation from './Navigation';
@@ -12,6 +12,7 @@ export default class Home extends React.Component {
     this.state = {
       isLoading: true,
       landmarks: [],
+      coords: null,
       location: null,
     };
   }
@@ -25,8 +26,11 @@ export default class Home extends React.Component {
   }
   
   _getLocationAsync = async () => {
-    let location = await Location.getCurrentPositionAsync({});
-    this.setState({ location });
+    const { status: locationPermission } = await Permissions.askAsync(Permissions.LOCATION);
+    if(locationPermission === 'granted') {
+      let location = await Location.getCurrentPositionAsync({accuracy : Location.Accuracy.Low});
+      this.setState({ location });
+    }
   };
   
   fetchLandmarkData() {
@@ -40,6 +44,25 @@ export default class Home extends React.Component {
     })
     .catch((error) => {
       console.log(error);
+    });
+  }
+
+  getDirections(start, end) {
+    const startString = `${start.longitude},${start.latitude}`;
+    const endString = `${end.longitude},${end.latitude}`;
+
+    let directionCoords = new Array();
+
+    fetch(`https://api.openrouteservice.org/v2/directions/driving-car?api_key=API_KEY&start=${startString}&end=${endString}`)
+    .then((response => response.json()))
+    .then(responseJSON =>{
+      responseJSON.features[0].geometry.coordinates.forEach(coord => {
+        directionCoords.push({
+          latitude: coord[1],
+          longitude: coord[0]
+        });
+      });
+      this.setState({coords: directionCoords.length !== 0 ? directionCoords : null});
     });
   }
   
@@ -76,9 +99,20 @@ export default class Home extends React.Component {
                 coordinate={coords}
                 title={landmark.title.rendered}
                 description={metadata}
-              />
+                onPress={() => {
+                  if(this.state.location !== null) {
+                    this.getDirections(this.state.location.coords, coords);
+                  }
+                }}>
+              </MapView.Marker>
             );
           })}
+
+          {this.state.coords !== null && <MapView.Polyline
+            coordinates={this.state.coords}
+            strokeWidth={2}
+            strokeColor='red'/>}
+            
         </MapView>
 
         <Navigation/>
