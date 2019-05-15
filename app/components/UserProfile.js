@@ -37,12 +37,19 @@ export default class UserProfile extends React.Component {
       this.setState({
         countVisitedLandmarks: idsVisitedLandmarks.length,
       });
-
       fetch('https://i-am-bulgarian.000webhostapp.com/wp-json/wp/v2/landmark?include=' + idsVisitedLandmarks.join())
       .then((response) => response.json())
       .then((responseJson) => {
+        let sortedLandmarks = new Array();
+        for (let i = idsVisitedLandmarks.length - 1; i >= 0; i--) {
+          for (let j = 0; j < responseJson.length; j++) {
+            if(responseJson[j].id == idsVisitedLandmarks[i]) {
+              sortedLandmarks.push(responseJson[j]);
+            }
+          }          
+        }
         this.setState({ 
-          visitedLandmarks: responseJson, 
+          visitedLandmarks: sortedLandmarks, 
         });
       })
       .catch((error) => {
