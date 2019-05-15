@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, TouchableOpacity, Dimensions, AsyncStorage } from 'react-native';
+import { Text, View, TouchableOpacity, Dimensions, AsyncStorage, Modal, Image, WebView, ScrollView } from 'react-native';
 import { Permissions, Camera, Location, Accelerometer, Magnetometer } from 'expo';
 
 import { ARLocation } from '../model/ARLocation';
@@ -10,10 +10,7 @@ import Navigation from './Navigation';
 
 const z_near = 0.5;
 const z_far = 2000;
-const distanceThreshold = 100;
-
-//TODO for testing remove
-// const testPoints = [{name: "Съдебна палата", location: new ARLocation(42.95908283333333, 23.35125, 500), visited: false}];
+const distanceThreshold = 300;
 
 /**
  * A component which shows where real-world locations are by
@@ -37,6 +34,8 @@ export default class ARCamera extends React.Component {
         arPoints: [{id: -1, name: "", location: new ARLocation(0.0, 0.0, 9000), visited: true, points: 0}],
         //initial empty coordinates
         arCoords: [{name: "", x: 0, y: 0}],
+        overlayIsActive: false,
+        overlayData: null
       };
     }
 
@@ -54,14 +53,6 @@ export default class ARCamera extends React.Component {
         let pos = await Location.getCurrentPositionAsync({accuracy : Location.Accuracy.BestForNavigation});
         let location = new ARLocation(pos.coords.latitude, pos.coords.longitude, pos.coords.altitude);
 
-        //TODO for testing remove
-        // let arPoints = this.getPointsInRadius(location, testPoints, z_far);
-
-        // this.setState({
-        //   location: location,
-        //   arPoints: arPoints
-        // });
-        
         this.setState({location: location}, () => this.updateARPoints());
       }
 
@@ -73,7 +64,7 @@ export default class ARCamera extends React.Component {
 
       //subscribe to location updates
       this.locationSubscription = await Location.watchPositionAsync(
-        {accuracy: Location.Accuracy.BestForNavigation, timeInterval: 1000, distanceInterval: 5}, 
+        {accuracy: Location.Accuracy.BestForNavigation, timeInterval: 1000, distanceInterval: 5},
         result => this.onLocationUpdate(result));    
       }
 
@@ -82,8 +73,6 @@ export default class ARCamera extends React.Component {
       Accelerometer.removeAllListeners();
       Magnetometer.removeAllListeners();
       this.locationSubscription.remove();
-
-      //TODO Check if camera unmounts properly
     }
 
     render() {
@@ -103,7 +92,6 @@ export default class ARCamera extends React.Component {
               <View key={coord.name} />
             );
           }
-  
           return (
             <View
             key={coord.name} 
@@ -113,38 +101,118 @@ export default class ARCamera extends React.Component {
               top: coord.y,
               zIndex: 1, 
               backgroundColor: coord.backgroundColor,
-              borderWidth: 2,
-              borderRadius: 20,
-              borderColor: coord.borderColor}}>
-  
-              <TouchableOpacity onPress={() => this.onCoordPressed(coord)}>
+              borderColor: "white",
+              borderWidth: 1,
+              padding:10,}}
+              onTouchStart={() => this.onCoordPressed(coord)}
+            >
+ 
                 <Text style={{
                   textAlign: "center",
+                  fontFamily: "roboto-bold",
                   color: "#FFFFFF"}}>
-                  {coord.name}{"\n"}{Math.floor(coord.distance)}М
+                  {coord.name}
                 </Text>
-              </TouchableOpacity>
+                <Text style={{fontFamily:"roboto-regular", textAlign: "center", color:"white"}}>{Math.floor(coord.distance)}М</Text>
+             
             </View>
           )
         });
-  
+       
         return (
-          <View style={{ flex: 1 }}>
-  
+        <View style={{ flex: 1 }}>
+ 
             {/* AR Overlay */}
             {ARViews}
-  
+           
+            <Modal
+              visible={this.state.overlayIsActive}
+              animationType='fade'
+              onRequestClose={() => {/* required prop, do nothing */}}
+              transparent={true}>
+ 
+              {this.state.overlayData !== null && <View style={{
+                alignItems: 'stretch',
+                justifyContent: 'center',
+                flex: 1}}>
+               
+                <View style={{
+                  flex: 1,
+                  marginBottom: 100,
+                  marginTop: 50,
+                  marginLeft: 25,
+                  marginRight: 25,
+                  backgroundColor: 'rgba(255,255,255,0.8)'}}>
+                 
+                  <TouchableOpacity style={{
+                    zIndex: 90,
+                    position: 'absolute',
+                    top: -10,
+                    right: -10,}}
+                    onPress={() => {this.setModalOverlay(false);}}>
+                   
+                    <Image style={{
+                      width: 30,
+                      height: 30,
+                      resizeMode: 'contain'}} source={require('../assets/img/icons/times-circle-solid.png')}/>
+                     
+                  </TouchableOpacity>
+                    <View style={{
+                      backgroundColor: '#f7931e',
+                      padding: 20,
+                      alignItems: 'center',
+                      zIndex: 1,}}>
+                     
+                      <Text style={{
+                        color: 'white',
+                        fontFamily: 'roboto-bold',
+                        fontSize: 20,}}>
+                        {this.state.overlayData.pointsMessage}
+                      </Text>
+                    </View>
+                   
+                    <View style={{padding:20}}>
+                      <View style={{ height: 150}}>
+                        {this.state.overlayData.videoUri != null && <WebView
+                          style={{ flex:1 }}
+                          javaScriptEnabled={true}
+                          domStorageEnabled={true}
+                          source={{ uri: this.state.overlayData.videoUri }}
+                        />}
+                      </View>
+                     
+                      <Text style={{
+                        fontSize: 24,
+                        marginTop: 20,
+                        marginBottom: 10,
+                        textAlign: 'center',
+                        fontFamily: 'roboto-bold',
+                      }}>{this.state.overlayData.title}</Text>
+                     
+                      <ScrollView style={{marginBottom: 300}}>
+                        <Text style={{
+                          fontSize:16,
+                          lineHeight: 20,
+                          fontFamily: 'roboto-regular',
+                        }}
+                        >{this.state.overlayData.description}</Text>
+                      </ScrollView>
+                    </View>
+                  </View>
+              </View>}
+            </Modal>
+ 
             {/* Camera as background */}
             {<Camera
-            style={{ flex: 1, zIndex: 0, width: this.state.width, height: this.state.height }} 
+            style={{ flex: 1, zIndex: 0, width: this.state.width, height: this.state.height }}
             type={Camera.Constants.Type.back}
             onCameraReady={() => {
               this.generateProjectionMatrix();
-  
+ 
               Accelerometer.addListener(result => {
                 this.onAccelerometerUpdate(result);
               });
-  
+ 
               Magnetometer.addListener(result =>{
                 this.setState({ magnetometerData: result });
               });
@@ -152,24 +220,34 @@ export default class ARCamera extends React.Component {
             >
             {/* !!! REACT-NATIVE ANDROID ISSUE CAMERA COMPONENT MUST NOT HAVE CHILDREN !!! */}
             </Camera>}
-
+ 
             <Navigation/>
           </View>
         );
       }
     }
-
+ 
+    setModalOverlay(isActive, modalData) {
+      if(isActive === false) {
+        this.setState({overlayIsActive: false, overlayData: null});
+      } else {
+        this.setState({
+          overlayIsActive: true,
+          overlayData: {
+            title: modalData.name,
+            pointsMessage: modalData.visited === true ? `Бил си тук` : modalData.distance <= distanceThreshold ? `Спечели ${modalData.points} т.` : `Ще спечелиш ${modalData.points} т.`,
+            description: modalData.description,
+            videoUri: modalData.videoUri
+          }
+        });
+      }
+    }
+ 
     /**
      * Called when the user touches an AR overlay element.
      */
     async onCoordPressed(coord) {
-      //TODO for testing remove
-      // const { arPoints } = this.state;
-      // arPoints.forEach(arPoint => {
-      //   if(coord.name === arPoint.name && coord.distance <= distanceThreshold){
-      //     arPoint.visited = true;
-      //   }
-      // });
+      this.setModalOverlay(true, coord);
 
       const { arPoints } = this.state;
       arPoints.forEach(async (arPoint) => {
@@ -183,7 +261,7 @@ export default class ARCamera extends React.Component {
             if(user) {
               userID = JSON.parse(user).id;
             }
-            
+
             //update visited landmarks and points
             let formData = new FormData();
             formData.append('user_id', userID);
@@ -194,11 +272,10 @@ export default class ARCamera extends React.Component {
                 method: 'POST',
                 body: formData
               });
-            
+
               const responseJson = await response.json();
               if(responseJson.status) {
-                console.log(responseJson.status);
-                //TODO Notify user that he has received points
+                //TODO add check?
               }
             }
             catch (error) {
@@ -250,11 +327,14 @@ export default class ARCamera extends React.Component {
           landmarks.push({
             id: landmark.id,
             name: landmark.title.rendered,
-            location: new ARLocation(Number(landmark.acf.landmark_latitude), 
+            location: new ARLocation(Number(landmark.acf.landmark_latitude),
                                      Number(landmark.acf.landmark_longitude),
                                      Number(landmark.acf.landmark_altitude)),
             visited: visitedIDs.includes(landmark.id.toString()),
-            points: Number(landmark.acf.landmark_points)});
+            points: Number(landmark.acf.landmark_points),
+            videoUri: landmark.acf.landmark_ar_video,
+            description: landmark.acf.landmark_ar_text
+          });
         });
 
         let arPoints = this.getPointsInRadius(this.state.location, landmarks, z_far);
@@ -275,7 +355,7 @@ export default class ARCamera extends React.Component {
           arPoints.push(point);
         }
       });
-    
+
       return arPoints;
     }
 
@@ -359,19 +439,16 @@ export default class ARCamera extends React.Component {
           //set the color of the overlay based on the distance to the point and
           //whether it has already been visited or not
           //TODO Styles can be moved
-          let backgroundColor = "#5976FF"
-          let borderColor = "#2B48D5";
+          let backgroundColor = "#f7931e"
           switch (true) {
             case (arPoint.visited === true):
-              backgroundColor = "#8C8C8C";
-              borderColor = "#4E4E4E";
+              backgroundColor = "#cacaca";
               break;
-
+             
             case (distance <= distanceThreshold):
-              backgroundColor = "#4BA9AB";
-              borderColor = "#225556";
+              backgroundColor = "#28CC41";
               break;
-
+ 
             default:
               break;
           }
@@ -383,10 +460,12 @@ export default class ARCamera extends React.Component {
             x: x,
             y: y,
             distance: distance,
-            backgroundColor: backgroundColor,
-            borderColor: borderColor});
+            visited: arPoint.visited,
+            videoUri: arPoint.videoUri,
+            description: arPoint.description,
+            backgroundColor: backgroundColor});
           this.setState({arCoords: coords});    
         }
-      });   
+      });  
     }
 }
