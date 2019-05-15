@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, Image } from 'react-native';
 import { MapView, Permissions, Location } from "expo";
 
 import general from '../styles/general';
@@ -91,14 +91,14 @@ export default class Home extends React.Component {
               longitude: parseFloat(landmark.acf.landmark_longitude),
             };
             
-            const metadata = landmark.acf.landmark_address;
+            const metadata = landmark.acf.landmark_points;
             
             return (
               <MapView.Marker
                 key={index}
                 coordinate={coords}
                 title={landmark.title.rendered}
-                description={metadata}
+                description= {'Ще получите: ' + metadata + (metadata == 1 ? ' точка' : ' точки')}
                 onPress={() => {
                   if(this.state.location !== null) {
                     this.getDirections(this.state.location.coords, coords);
@@ -110,9 +110,14 @@ export default class Home extends React.Component {
 
           {this.state.coords !== null && <MapView.Polyline
             coordinates={this.state.coords}
-            strokeWidth={2}
+            strokeWidth={4}
             strokeColor='red'/>}
-            
+          
+          {this.state.location !== null && <MapView.Marker  
+            coordinate={this.state.location.coords}>
+              <Image style={{width: 35, height: 35, resizeMode: 'contain'}} source={require('../assets/img/icons/male-solid.png')}/>
+            </MapView.Marker>
+          } 
         </MapView>
 
         <Navigation/>
