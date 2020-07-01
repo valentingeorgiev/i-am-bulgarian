@@ -173,7 +173,7 @@ export default class ARCamera extends React.Component {
                    
                     <View style={{padding:20}}>
                       <View style={{ height: 150}}>
-                        {this.state.overlayData.videoUri != null && <WebView
+                        {this.state.overlayData.videoUri != '' && <WebView
                           style={{ flex:1 }}
                           javaScriptEnabled={true}
                           domStorageEnabled={true}

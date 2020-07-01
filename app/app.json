@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "I am Bulgarian",
+    "name": "Аз съм българче",
     "slug": "i-am-bulgarian",
     "privacy": "public",
     "sdkVersion": "32.0.0",
@@ -24,6 +24,9 @@
     ],
     "ios": {
       "supportsTablet": true
+    },
+    "android": {
+      "package": "com.iambulgarian.iambulgarian"
     }
   }
 }
